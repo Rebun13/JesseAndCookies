@@ -15,15 +15,35 @@ vector<string> split(const string &);
  *  1. INTEGER k
  *  2. INTEGER_ARRAY A
  */
-
 int cookies(int k, vector<int> A) {
+    int counter = 0;
+    while(A.size() > 1) {
+        vector<int>::iterator lastCookieIndex = min_element(A.begin(), A.end());
+        int lastCookie = *lastCookieIndex;
+        if(lastCookie < k){
+            A.erase(lastCookieIndex);
+            vector<int>::iterator lastCookieIndex = min_element(A.begin(), A.end());
+            int newValue = lastCookie + 2 * (*lastCookieIndex);
+            A.erase(lastCookieIndex);
+            A.push_back(newValue);
+            counter++;
+        } else {
+            return counter;
+        }
+    }
+    return -1;
+}
+
+int cookiesSubopt(int k, vector<int> A) {
     int counter = 0;
     while(A.size() > 1) {
         int lastCookieIndex = 0;
         int secondLastCookieIndex = 0;
         for(int i = 1; i < A.size(); ++i) {
             if(A.at(i) < k) {
+                cout << "Bad cookie: [" << i << "] " << A.at(i) << endl;
                 if(A.at(i) < A.at(lastCookieIndex)){
+                    cout << "Goes first: [" << i << "] " << A.at(i) << endl;
                     secondLastCookieIndex = lastCookieIndex;
                     lastCookieIndex = i;
                 }
@@ -33,20 +53,25 @@ int cookies(int k, vector<int> A) {
                 lastCookieIndex == secondLastCookieIndex) &&
                 i != lastCookieIndex
             ) {
+                cout << "Goes second: [" << i << "] " << A.at(i) << endl;
                 secondLastCookieIndex = i;
             }
         }
         if(A.at(lastCookieIndex) < k) {
             int newValue = A.at(lastCookieIndex) + 2 * A.at(secondLastCookieIndex);
+            cout << A.at(lastCookieIndex) << " + 2 * " << A.at(secondLastCookieIndex) << " = "  << newValue << endl;
+            cout << "Erasing " << *(A.cbegin() + lastCookieIndex) << " and " << *(A.cbegin() + secondLastCookieIndex) << endl;
             int offset = lastCookieIndex < secondLastCookieIndex ? -1 : 0;
             A.erase(A.cbegin() + lastCookieIndex);
             A.erase(A.cbegin() + secondLastCookieIndex + offset);
             A.push_back(newValue);
             counter++;
         } else {
+            cout << "No more bad cookies: " << counter << endl;
             return counter;
         }
     }
+    cout << "Not enough cookies: " << counter << endl;
     return -1;
 }
 
