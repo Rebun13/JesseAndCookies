@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <queue>
+#include <functional>
+		
 
 using namespace std;
 
@@ -16,6 +19,21 @@ vector<string> split(const string &);
  *  2. INTEGER_ARRAY A
  */
 int cookies(int k, vector<int> A) {
+    priority_queue Q(A.begin(), A.end(), greater<int>());
+    int counter = 0;
+    while(Q.size() > 1 && Q.top() < k) {
+        int first = Q.top();
+        Q.pop();
+        int second = Q.top();
+        Q.pop();
+        Q.push(first + 2 * second);
+        ++counter;
+    }
+    if(Q.top() < k) return -1;
+    return counter;
+}
+
+int cookiesAlt(int k, vector<int> A) {
     int counter = 0;
     while(A.size() > 1) {
         vector<int>::iterator lastCookieIndex = min_element(A.begin(), A.end());
